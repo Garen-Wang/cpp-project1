@@ -1,10 +1,11 @@
 #include "terminal.cpp"
 #include "terminal.hpp"
+#include "resources.cpp"
 
 int main() {
     Terminal terminal;
-    unsigned int width = terminal.getWidth();
-    unsigned int height = terminal.getHeight();
-    printf("%u %u\n", width, height);
-    return 0;
+    auto temp1 = screen[0];
+    auto temp2 = screen_style[0];
+    printf("%d\n", temp1);
+    printf("%d %d %d\n", temp2.text_attribute, temp2.foreground, temp2.background);
 }
