@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cstdio>
 #include <utility>
 
 enum TextAttribute {
@@ -32,28 +31,30 @@ enum class Background {
     White = 47
 };
 
+std::pair<unsigned int, unsigned int> get_terminal_size();
+
 class Terminal {
     private:
         unsigned int width;
         unsigned int height;
-        // nullptr if actual terminal, otherwise sub-terminal
-        Terminal &parent;
+        // nullptr if actual terminal else sub-terminal
+        Terminal *parent;
         unsigned int offset_width;
         unsigned int offset_height;
     public:
         // constructor and destructor
+        Terminal();
         Terminal(Terminal *parent, unsigned int width, unsigned int height, unsigned int offset_width, unsigned int offset_height);
         ~Terminal();
+
         // debug
         unsigned int getWidth();
         unsigned int getHeight();
         bool isActual();
 
-        // set parameter
-
         // print
-
+        void print();
+        // clean
+        void clear();
 };
 
-
-std::pair<unsigned int, unsigned int> get_terminal_size();
