@@ -31,7 +31,6 @@ std::pair<unsigned int, unsigned int> get_terminal_size() {
     return std::make_pair(height, width);
 }
 
-
 bool Point::operator == (const Point &rhs) const {
     return text_attribute == rhs.text_attribute && foreground == rhs.foreground && background == rhs.background;
 }
@@ -46,9 +45,6 @@ offset_x(0), offset_y(0) {
     unsigned int size = this->height * this->width;
     buffer.resize(size);
     buffer_style.resize(size);
-    for(int i = 0; i < size; i++) {
-        buffer_style[i] = default_point;
-    }
 }
 
 // constructor of subterminal
@@ -68,8 +64,8 @@ bool Terminal::isActual() {
     return parent == nullptr;
 }
 
-unsigned int Terminal::getIndex(unsigned int x, unsigned int y) {
-    return x * this->width + y;
+unsigned int getIndex(unsigned int x, unsigned int y) {
+    return x * screen_width + y;
 }
 
 void Terminal::print(std::vector<std::string> image, unsigned int x, unsigned int y, Point style, int z_index) {
@@ -79,7 +75,7 @@ void Terminal::print(std::vector<std::string> image, unsigned int x, unsigned in
     assert(this->offset_y + this->width <= screen_width);
     for(int i = 0; i < image_height; ++i) {
         for(int j = 0; j < image_width; ++j) {
-            int idx = getIndex(i + x + this->offset_x, j + y + this->offset_y);
+            unsigned int idx = getIndex(i + x + this->offset_x, j + y + this->offset_y);
             buffer[idx] = image[i][j];
             buffer_style[idx] = style;
         }
@@ -87,23 +83,25 @@ void Terminal::print(std::vector<std::string> image, unsigned int x, unsigned in
 }
 
 void Terminal::flush() {
-    unsigned int same = 1, size = screen_height * screen_width;
-    for(int i = 1; i < size; i++) {
-        if(!buffer[i]) buffer[i] = ' ';
-        if(buffer_style[i] == buffer_style[i - 1]) ++same;
-        else {
-            // [i - same, i)
-            char temp = buffer[i];
-            std::string temp_str = buffer.substr(i - same, same);
-            printf("\033[%d;%d;%dm%s", buffer_style[i - 1].text_attribute, buffer_style[i - 1].foreground, buffer_style[i - 1].background, temp_str.c_str());
-            same = 1;
+    assert(this->parent == nullptr);
+    unsigned int size = screen_height * screen_width;
+    for(int l = 0, r = 0; l < size; l = r) {
+        while(r < size && buffer_style[r] == buffer_style[l]) {
+            if(!buffer[r]) buffer[r] = ' ';
+            ++r;
         }
+        // printf("[%d, %d): %d %d %d\n", l, r, buffer_style[l].text_attribute, buffer_style[l].foreground, buffer_style[l].background);
+        std::string temp = buffer.substr(l, r - l);
+        printf("\033[%d;%d;%dm%s", buffer_style[l].text_attribute, buffer_style[l].foreground, buffer_style[l].background, temp.c_str());
     }
-    std::string temp_str = buffer.substr(size - same);
-    printf("\033[%d;%d;%dm%s", buffer_style[size - 1].text_attribute, buffer_style[size - 1].foreground, buffer_style[size - 1].background, temp_str.c_str());
     fflush(0);
 }
 
 void Terminal::clear() {
-
+    assert(this->parent == nullptr);
+    unsigned int size = screen_height * screen_width;
+    buffer = "";
+    buffer.resize(size);
+    std::vector<Point>().swap(buffer_style);
+    buffer_style.resize(size);
 }

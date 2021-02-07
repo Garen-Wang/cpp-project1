@@ -57,6 +57,8 @@ std::string buffer;
 std::vector<Point> buffer_style;
 unsigned int screen_height, screen_width;
 
+unsigned int getIndex(unsigned int x, unsigned int y);
+
 class Terminal {
     private:
         // height and width of abstracted terminal area
@@ -75,7 +77,6 @@ class Terminal {
         inline unsigned int getWidth();
         bool isActual();
 
-        unsigned int getIndex(unsigned int x, unsigned int y);
         // print
         void print(std::vector<std::string> image, unsigned int x, unsigned int y, Point style, int z_index);
         // load screen before flushing
