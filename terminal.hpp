@@ -18,7 +18,9 @@ enum class Foreground {
     Blue = 34,
     Magenta = 35,
     Cyan = 36,
-    White = 37
+    White = 37,
+    Default = 38
+    // 38 is undefined, so default
 };
 
 enum class Background {
@@ -29,24 +31,31 @@ enum class Background {
     Blue = 44,
     Magenta = 45,
     Cyan = 46,
-    White = 47
+    White = 47,
+    Default = 48
+    // 48 is undefined, so default
 };
 
 struct Point {
     TextAttribute text_attribute;
     Foreground foreground;
     Background background;
+    bool operator == (const Point &rhs) const;
 };
 // white on black, no text attribute
 Point default_point = {
-    TextAttribute::Default, Foreground::White, Background::Black
+    TextAttribute::Default, Foreground::Default, Background::Default
 };
 
 std::pair<unsigned int, unsigned int> get_terminal_size();
-// used when flushing, simulating terminal
-std::vector<char> screen;
-std::vector<Point> screen_style;
-unsigned int screen_height, screen_width; // updated only when flushing
+
+// buffer, displayed after a flush
+// if null, convert to space
+std::string buffer;
+// buffer style
+// if null, convert to default_point
+std::vector<Point> buffer_style;
+unsigned int screen_height, screen_width;
 
 class Terminal {
     private:
@@ -57,18 +66,10 @@ class Terminal {
         // relative to the actual terminal (no need to care when passing parameters)
         // x_max = height - 1, y_max = width - 1
         unsigned int offset_x, offset_y;
-        // buffer, displayed after a flush
-        // if null, convert to space
-        std::vector<char> buffer;
-        // buffer style
-        // if null, convert to default_point
-        std::vector<Point> buffer_style;
-        // z-index? sub-terminal will cover its parent
     public:
-        // constructor and destructor
+        // constructor
         Terminal();
         Terminal(Terminal *parent, unsigned int height, unsigned int width, unsigned int offset_x, unsigned int offset_y);
-        ~Terminal();
 
         inline unsigned int getHeight();
         inline unsigned int getWidth();
@@ -76,9 +77,8 @@ class Terminal {
 
         unsigned int getIndex(unsigned int x, unsigned int y);
         // print
-        void print(std::vector<std::string> image, unsigned int x, unsigned int y, Point style);
+        void print(std::vector<std::string> image, unsigned int x, unsigned int y, Point style, int z_index);
         // load screen before flushing
-        void loadScreen();
         void flush();
         // clean
         void clear();

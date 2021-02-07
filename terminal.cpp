@@ -32,19 +32,23 @@ std::pair<unsigned int, unsigned int> get_terminal_size() {
 }
 
 
+bool Point::operator == (const Point &rhs) const {
+    return text_attribute == rhs.text_attribute && foreground == rhs.foreground && background == rhs.background;
+}
+
 // constructor of actual terminal
 Terminal::Terminal():
 offset_x(0), offset_y(0) {
     this->parent = nullptr;
     auto temp = get_terminal_size();
-    this->width = temp.first;
-    this->height = temp.second;
-    this->buffer.resize(this->width * this->height);
-    this->buffer_style.resize(this->width * this->height);
-    screen.resize(this->width * this->height);
-    screen_style.resize(this->width * this->height);
-    screen_height = this->height;
-    screen_width = this->width;
+    screen_height = this->height = temp.first;
+    screen_width = this->width = temp.second;
+    unsigned int size = this->height * this->width;
+    buffer.resize(size);
+    buffer_style.resize(size);
+    for(int i = 0; i < size; i++) {
+        buffer_style[i] = default_point;
+    }
 }
 
 // constructor of subterminal
@@ -52,15 +56,6 @@ Terminal::Terminal(Terminal *parent, unsigned int height, unsigned int width, un
 parent(parent), height(height), width(width) {
     this->offset_x = parent->offset_x + offset_x;
     this->offset_y = parent->offset_y + offset_y;
-    this->buffer.resize(this->width * this->height);
-    this->buffer_style.resize(this->width * this->height);
-}
-
-// destructor
-Terminal::~Terminal() {
-    // really free memory rather than clear()
-    std::vector<char>().swap(this->buffer);
-    std::vector<Point>().swap(this->buffer_style);
 }
 
 inline unsigned int Terminal::getHeight() {
@@ -77,39 +72,38 @@ unsigned int Terminal::getIndex(unsigned int x, unsigned int y) {
     return x * this->width + y;
 }
 
-void Terminal::print(std::vector<std::string> image, unsigned int x, unsigned int y, Point style) {
+void Terminal::print(std::vector<std::string> image, unsigned int x, unsigned int y, Point style, int z_index) {
     int image_height = image.size(), image_width = image[0].length();
-    for(int i = x; i >= 0 && i + image_height <= this->height; ++i) {
-        for(int j = y; j >= 0 && j + image_width <= this->width; ++j) {
-            int idx = getIndex(i, j);
+    assert(x + image_height <= this->height && y + image_width <= this->width);
+    assert(this->offset_x + this->height <= screen_height);
+    assert(this->offset_y + this->width <= screen_width);
+    for(int i = 0; i < image_height; ++i) {
+        for(int j = 0; j < image_width; ++j) {
+            int idx = getIndex(i + x + this->offset_x, j + y + this->offset_y);
             buffer[idx] = image[i][j];
             buffer_style[idx] = style;
         }
     }
 }
 
-void Terminal::loadScreen() {
-    if(this->parent != nullptr) this->parent->loadScreen();
-    assert(this->offset_x + this->height <= screen_height && this->offset_x >= 0);
-    assert(this->offset_y + this->width <= screen_width && this->offset_y >= 0);
-
-    for(int i = 0; i < this->height; ++i) {
-        for(int j = 0; j < this->width; ++j) {
-            unsigned int idx = getIndex(i, j);
-            unsigned int screen_idx = getIndex(i + this->offset_x, j + this->offset_y);
-            screen[screen_idx] = this->buffer[idx];
-            screen_style[screen_idx] = this->buffer_style[idx];
+void Terminal::flush() {
+    unsigned int same = 1, size = screen_height * screen_width;
+    for(int i = 1; i < size; i++) {
+        if(!buffer[i]) buffer[i] = ' ';
+        if(buffer_style[i] == buffer_style[i - 1]) ++same;
+        else {
+            // [i - same, i)
+            char temp = buffer[i];
+            std::string temp_str = buffer.substr(i - same, same);
+            printf("\033[%d;%d;%dm%s", buffer_style[i - 1].text_attribute, buffer_style[i - 1].foreground, buffer_style[i - 1].background, temp_str.c_str());
+            same = 1;
         }
     }
-}
-
-void Terminal::flush() {
-
+    std::string temp_str = buffer.substr(size - same);
+    printf("\033[%d;%d;%dm%s", buffer_style[size - 1].text_attribute, buffer_style[size - 1].foreground, buffer_style[size - 1].background, temp_str.c_str());
+    fflush(0);
 }
 
 void Terminal::clear() {
-    // std::vector<char>().swap(screen);
-    // std::vector<Point>().swap(screen_style);
-    // screen.resize(screen_height * screen_width);
-    // screen_style.resize(screen_height * screen_width);
+
 }

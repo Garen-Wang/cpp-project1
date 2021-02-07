@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 
+// restrict that size must be a square
 std::vector<std::string> imageX = {
     R"(__  __)",
     R"(\ \/ /)",
