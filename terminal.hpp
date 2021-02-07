@@ -55,6 +55,7 @@ std::string buffer;
 // buffer style
 // if null, convert to default_point
 std::vector<Point> buffer_style;
+std::vector<int> buffer_z;// 0 for space, must strictly greater to overlap
 unsigned int screen_height, screen_width;
 
 unsigned int getIndex(unsigned int x, unsigned int y);

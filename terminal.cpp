@@ -45,6 +45,7 @@ offset_x(0), offset_y(0) {
     unsigned int size = this->height * this->width;
     buffer.resize(size);
     buffer_style.resize(size);
+    buffer_z.resize(size);
 }
 
 // constructor of subterminal
@@ -76,8 +77,11 @@ void Terminal::print(std::vector<std::string> image, unsigned int x, unsigned in
     for(int i = 0; i < image_height; ++i) {
         for(int j = 0; j < image_width; ++j) {
             unsigned int idx = getIndex(i + x + this->offset_x, j + y + this->offset_y);
-            buffer[idx] = image[i][j];
-            buffer_style[idx] = style;
+            if(z_index > buffer_z[idx]) {
+                buffer[idx] = image[i][j];
+                buffer_style[idx] = style;
+                buffer_z[idx] = z_index;
+            }
         }
     }
 }
@@ -104,4 +108,6 @@ void Terminal::clear() {
     buffer.resize(size);
     std::vector<Point>().swap(buffer_style);
     buffer_style.resize(size);
+    std::vector<int>().swap(buffer_z);
+    buffer_z.resize(size);
 }

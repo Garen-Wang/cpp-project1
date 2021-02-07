@@ -17,6 +17,8 @@ int main() {
     };
     up_terminal.print(imageX, 5, 10, default_point, 1);
     down_terminal.print(imageX, 5, 40, special_point, 1);
+    up_terminal.print(imageX, 5, 10, special_point, 2);
+    down_terminal.print(imageX, 5, 40, default_point, 2);
     terminal.flush();
     // system("clear");
     return 0;
