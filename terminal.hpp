@@ -81,8 +81,7 @@ class Terminal {
         // print
         void print(std::vector<std::string> image, unsigned int x, unsigned int y, Point style, int z_index);
         // load screen before flushing
-        void flush();
-        // clean
-        void clear();
 };
 
+void flush();
+void clear();

@@ -20,10 +20,10 @@ enum class Direction {
 
 class Animation {
     public:
-    // virtual function
+
 };
 
-class MoveAnimation : Animation {
+class MoveAnimation : public Animation {
     private:
         std::vector<std::string> &image;// main image in one animation
         unsigned int start_frame;// unit frame
@@ -31,9 +31,11 @@ class MoveAnimation : Animation {
         Terminal *terminal;// record terminal
         unsigned int x, y;// relative position to this terminal
         Direction direction;// move direction
+        Point style;// style
         bool keep;// whether to keep last frame or not
     public:
-        MoveAnimation(Terminal *terminal, std::vector<std::string> &image, Direction direction, unsigned int x=0, unsigned int y=0, unsigned int start_frame=0, unsigned int duration=120, bool keep=false);
+        MoveAnimation(Terminal *terminal, std::vector<std::string> &image, Direction direction, unsigned int x=0u, unsigned int y=0u, unsigned int start_frame=0u, unsigned int duration=120u, Point style=default_point, bool keep=false);
+        void generate();
 
 };
 
@@ -44,31 +46,33 @@ class StillAnimation : public Animation {
         unsigned int duration;// unit: frame
         Terminal *terminal;// record terminal
         unsigned int x, y;// relative position to this terminal
+        Point style;// style
         bool keep;// whether to keep last frame or not
     public:
-        StillAnimation(Terminal *terminal, std::vector<std::string> &image, unsigned int x=0, unsigned int y=0, unsigned int start_frame=0, unsigned int duration=120, bool keep=false);
+        StillAnimation(Terminal *terminal, std::vector<std::string> &image, unsigned int x=0u, unsigned int y=0u, unsigned int start_frame=0u, unsigned int duration=120u, Point style=default_point, bool keep=false);
+        void generate();
 
 };
 
 class Animations {
     public:
-    // virtual function
+    virtual void play() = 0;
 };
 
 class SequencialAnimations : public Animations {
     private:
-        std::vector<Animation> &animations; // store instances of class Animation
-        int duration;// unit: frame
+        std::vector<Animation*> &animations; // store instances of class Animation
+        unsigned int duration;// unit: frame
     public:
-        SequencialAnimations(std::vector<Animation> animations, unsigned int duration=120);
+        SequencialAnimations(std::vector<Animation*> animations, unsigned int duration=120u);
         void makeSequencialAnimations();
 };
 
 class ParallelAnimations : public Animations {
     private:
-        std::vector<Animation> &animations;
+        std::vector<Animation*> &animations;
         unsigned int duration;
     public:
-        ParallelAnimations(std::vector<Animation> animations, unsigned int duration=120);
+        ParallelAnimations(std::vector<Animation*> animations, unsigned int duration=120u);
         void makeParallelAnimations();
 };

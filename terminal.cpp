@@ -86,8 +86,7 @@ void Terminal::print(std::vector<std::string> image, unsigned int x, unsigned in
     }
 }
 
-void Terminal::flush() {
-    assert(this->parent == nullptr);
+void flush() {
     unsigned int size = screen_height * screen_width;
     for(int l = 0, r = 0; l < size; l = r) {
         while(r < size && buffer_style[r] == buffer_style[l]) {
@@ -101,8 +100,7 @@ void Terminal::flush() {
     fflush(0);
 }
 
-void Terminal::clear() {
-    assert(this->parent == nullptr);
+void clear() {
     unsigned int size = screen_height * screen_width;
     buffer = "";
     buffer.resize(size);
