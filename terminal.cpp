@@ -77,7 +77,8 @@ void Terminal::print(std::vector<std::string> image, unsigned int x, unsigned in
     for(int i = 0; i < image_height; ++i) {
         for(int j = 0; j < image_width; ++j) {
             unsigned int idx = getIndex(i + x + this->offset_x, j + y + this->offset_y);
-            if(z_index > buffer_z[idx]) {
+            // permit overlapping when z indexes are equal
+            if(z_index >= buffer_z[idx]) {
                 buffer[idx] = image[i][j];
                 buffer_style[idx] = style;
                 buffer_z[idx] = z_index;
@@ -87,6 +88,7 @@ void Terminal::print(std::vector<std::string> image, unsigned int x, unsigned in
 }
 
 void flush() {
+    printf("\033[2J\033[1;1H");
     unsigned int size = screen_height * screen_width;
     for(int l = 0, r = 0; l < size; l = r) {
         while(r < size && buffer_style[r] == buffer_style[l]) {

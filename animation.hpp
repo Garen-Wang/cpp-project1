@@ -7,34 +7,34 @@
 #include "terminal.cpp"
 
 enum class Direction {
-    Still,
-    North,
-    East,
-    South,
-    West,
-    Northeast,
-    Northwest,
-    Southeast,
-    Southwest
+    Still = 0,
+    Up = 1,
+    Down = 2,
+    Left = 3,
+    Right = 4
 };
+const int dx[] = {0, -1, 1, 0, 0};
+const int dy[] = {0, 0, 0, -1, 1};
 
 class Animation {
     public:
-    // virtual function
+        virtual void generate() = 0;
 };
 
-class MoveAnimation : Animation {
+class MoveAnimation : public Animation {
     private:
         std::vector<std::string> &image;// main image in one animation
         unsigned int start_frame;// unit frame
         unsigned int duration;// unit: frame
         Terminal *terminal;// record terminal
-        unsigned int x, y;// relative position to this terminal
+        int x, y;// relative position to this terminal
+        int z;// z index
         Direction direction;// move direction
+        Point style;// style
         bool keep;// whether to keep last frame or not
     public:
-        MoveAnimation(Terminal *terminal, std::vector<std::string> &image, Direction direction, unsigned int x=0, unsigned int y=0, unsigned int start_frame=0, unsigned int duration=120, bool keep=false);
-
+        MoveAnimation(Terminal *terminal, std::vector<std::string> &image, Direction direction, int x=0, int y=0, int z=0, unsigned int start_frame=0, unsigned int duration=120, Point style=default_point, bool keep=false);
+        void generate();
 };
 
 class StillAnimation : public Animation {
@@ -43,11 +43,13 @@ class StillAnimation : public Animation {
         unsigned int start_frame;// unit frame
         unsigned int duration;// unit: frame
         Terminal *terminal;// record terminal
-        unsigned int x, y;// relative position to this terminal
+        int x, y;// relative position to this terminal
+        int z;// z index
+        Point style;// style
         bool keep;// whether to keep last frame or not
     public:
-        StillAnimation(Terminal *terminal, std::vector<std::string> &image, unsigned int x=0, unsigned int y=0, unsigned int start_frame=0, unsigned int duration=120, bool keep=false);
-
+        StillAnimation(Terminal *terminal, std::vector<std::string> &image, int x=0, int y=0, int z=0, unsigned int start_frame=0, unsigned int duration=120, Point style=default_point, bool keep=false);
+        void generate();
 };
 
 class Animations {
@@ -72,3 +74,5 @@ class ParallelAnimations : public Animations {
         ParallelAnimations(std::vector<Animation> animations, unsigned int duration=120);
         void makeParallelAnimations();
 };
+
+void predraw();

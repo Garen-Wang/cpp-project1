@@ -1,5 +1,7 @@
 #include "terminal.cpp"
 #include "terminal.hpp"
+#include "animation.hpp"
+#include "animation.cpp"
 #include "resources.cpp"
 
 int main() {
@@ -15,11 +17,13 @@ int main() {
     Point special_point = {
         TextAttribute::Blink, Foreground::Cyan, Background::Default
     };
-    up_terminal.print(images::x, 5, 10, default_point, 1);
-    down_terminal.print(images::x, 5, 40, special_point, 1);
-    up_terminal.print(images::x, 5, 10, special_point, 2);
-    down_terminal.print(images::x, 5, 40, default_point, 2);
-    flush();
-    // system("clear");
+    // up_terminal.print(images::x, 5, 10, default_point, 1);
+    // down_terminal.print(images::x, 5, 40, special_point, 1);
+    // up_terminal.print(images::x, 5, 10, special_point, 2);
+    // down_terminal.print(images::x, 5, 40, default_point, 2);
+    // flush();
+
+    Animation *anim = new MoveAnimation(&down_terminal, images::x, Direction::Right, 0, 0, 0, 30, 90);
+    anim->generate();
     return 0;
 }
