@@ -23,7 +23,8 @@ int main() {
     // down_terminal.print(images::x, 5, 40, default_point, 2);
     // flush();
 
-    Animation *anim = new MoveAnimation(&down_terminal, images::x, Direction::Right, 0, 0, 0, 1, 30, 90, special_point);
+    // Animation *anim = new MoveAnimation(&down_terminal, images::x, Direction::Left, 0, 100, 0, 1, 30, 90, default_point);
+    Animation *anim = new StillAnimation(&terminal, images::x, terminal.getHeight() / 3, terminal.getWidth() / 4, 0, 0, 120, default_point, false);
     anim->generate();
     return 0;
 }

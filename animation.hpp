@@ -16,6 +16,8 @@ enum class Direction {
 const int dx[] = {0, -1, 1, 0, 0};
 const int dy[] = {0, 0, 0, -1, 1};
 
+void predraw();
+
 class Animation {
     public:
         virtual void generate() = 0;
@@ -53,27 +55,43 @@ class StillAnimation : public Animation {
         void generate();
 };
 
+class SequencialAnimation : public Animation {
+    private:
+        std::vector<Animation *> animations; // store instances of class Animation
+        unsigned int duration;// unit: frame
+    public:
+        SequencialAnimation(std::vector<Animation *> animations, unsigned int duration=120);
+        void generate();
+};
+
+class ParallelAnimation : public Animation {
+    private:
+        std::vector<Animation *> animations;
+        unsigned int duration;
+    public:
+        ParallelAnimation(std::vector<Animation *> animations, unsigned int duration=120);
+        void generate();
+};
+
 class Animations {
     public:
-    // virtual function
+        virtual void generate() = 0;
 };
 
 class SequencialAnimations : public Animations {
     private:
-        std::vector<Animation> &animations; // store instances of class Animation
-        int duration;// unit: frame
+        std::vector<Animations *> animations;
+        unsigned int duration;
     public:
-        SequencialAnimations(std::vector<Animation> animations, unsigned int duration=120);
-        void makeSequencialAnimations();
+        SequencialAnimations(std::vector<Animations *> animations, unsigned int duration=120);
+        void generate();
 };
 
 class ParallelAnimations : public Animations {
     private:
-        std::vector<Animation> &animations;
+        std::vector<Animations *> animations;
         unsigned int duration;
     public:
-        ParallelAnimations(std::vector<Animation> animations, unsigned int duration=120);
-        void makeParallelAnimations();
+        ParallelAnimations(std::vector<Animations *> animations, unsigned int duration=120);
+        void generate();
 };
-
-void predraw();
