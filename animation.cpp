@@ -14,8 +14,8 @@ void predraw() {
     clear();
 }
 // class MoveAnimation
-MoveAnimation::MoveAnimation(Terminal *terminal, std::vector<std::string> &image, Direction direction, int x, int y, int z, unsigned int start_frame, unsigned int duration, Point style, bool keep):
-terminal(terminal), image(image), direction(direction), x(x), y(y), z(z), start_frame(start_frame), duration(duration), style(style), keep(keep) {}
+MoveAnimation::MoveAnimation(Terminal *terminal, std::vector<std::string> &image, Direction direction, int x, int y, int z, int v, unsigned int start_frame, unsigned int duration, Point style, bool keep):
+terminal(terminal), image(image), direction(direction), x(x), y(y), z(z), v(v), start_frame(start_frame), duration(duration), style(style), keep(keep) {}
 
 void MoveAnimation::generate() {
     unsigned int last_frame = start_frame + duration;
@@ -23,7 +23,6 @@ void MoveAnimation::generate() {
         usleep(33000);
         if(t >= start_frame) {
             predraw();
-            int v = 1;
             terminal->print(image, x, y, style, z);
             flush();
             x += v * dx[int(direction)];

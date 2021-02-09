@@ -29,11 +29,12 @@ class MoveAnimation : public Animation {
         Terminal *terminal;// record terminal
         int x, y;// relative position to this terminal
         int z;// z index
+        int v;// moving velocity
         Direction direction;// move direction
         Point style;// style
         bool keep;// whether to keep last frame or not
     public:
-        MoveAnimation(Terminal *terminal, std::vector<std::string> &image, Direction direction, int x=0, int y=0, int z=0, unsigned int start_frame=0, unsigned int duration=120, Point style=default_point, bool keep=false);
+        MoveAnimation(Terminal *terminal, std::vector<std::string> &image, Direction direction, int x=0, int y=0, int z=0, int v=5, unsigned int start_frame=0, unsigned int duration=120, Point style=default_point, bool keep=false);
         void generate();
 };
 

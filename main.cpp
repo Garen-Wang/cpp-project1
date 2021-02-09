@@ -23,7 +23,7 @@ int main() {
     // down_terminal.print(images::x, 5, 40, default_point, 2);
     // flush();
 
-    Animation *anim = new MoveAnimation(&down_terminal, images::x, Direction::Right, 0, 0, 0, 30, 90);
+    Animation *anim = new MoveAnimation(&down_terminal, images::x, Direction::Right, 0, 0, 0, 1, 30, 90, special_point);
     anim->generate();
     return 0;
 }
