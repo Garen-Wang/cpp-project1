@@ -65,30 +65,39 @@ bool Terminal::isActual() {
     return parent == nullptr;
 }
 
-unsigned int getIndex(unsigned int x, unsigned int y) {
+inline int getIndex(int x, int y) {
     return x * screen_width + y;
 }
 
-void Terminal::print(std::vector<std::string> image, unsigned int x, unsigned int y, Point style, int z_index) {
+bool Terminal::print(std::vector<std::string> image, int x, int y, Point style, int z_index) {
     int image_height = image.size(), image_width = image[0].length();
-    assert(x + image_height <= this->height && y + image_width <= this->width);
-    assert(this->offset_x + this->height <= screen_height);
-    assert(this->offset_y + this->width <= screen_width);
+    // x coordinate: [x + offset_x, x + offset_x + image_height)
+    // y coordinate: [y + offset_y, y + offset_y + image_width)
+    bool flag = (x + offset_x + image_height > 0 || x + offset_x < screen_height) && (y + offset_y + image_width > 0 || y + offset_y < screen_width);
+    if(!flag) return false;
+    // assert(x + image_height <= this->height && y + image_width <= this->width);
+    // assert(this->offset_x + this->height <= screen_height);
+    // assert(this->offset_y + this->width <= screen_width);
     for(int i = 0; i < image_height; ++i) {
+        int x_new = i + x + offset_x;
+        if(x_new < 0 || x_new >= screen_height) continue;
         for(int j = 0; j < image_width; ++j) {
-            unsigned int idx = getIndex(i + x + this->offset_x, j + y + this->offset_y);
-            // permit overlapping when z indexes are equal
-            if(z_index >= buffer_z[idx]) {
-                buffer[idx] = image[i][j];
-                buffer_style[idx] = style;
-                buffer_z[idx] = z_index;
+            int y_new = j + y + offset_y;
+            if(0 <= y_new && y_new < screen_width) {
+                int idx = getIndex(x_new, y_new);
+                // use \geq to permit overlapping when z indexes are equal
+                if(z_index >= buffer_z[idx]) {
+                    buffer[idx] = image[i][j];
+                    buffer_style[idx] = style;
+                    buffer_z[idx] = z_index;
+                }
             }
         }
     }
+    return true;
 }
 
 void flush() {
-    printf("\033[2J\033[1;1H");
     unsigned int size = screen_height * screen_width;
     for(int l = 0, r = 0; l < size; l = r) {
         while(r < size && buffer_style[r] == buffer_style[l]) {

@@ -58,7 +58,7 @@ std::vector<Point> buffer_style;
 std::vector<int> buffer_z;// 0 for space, must strictly greater to overlap
 unsigned int screen_height, screen_width;
 
-unsigned int getIndex(unsigned int x, unsigned int y);
+inline int getIndex(int x, int y);
 
 class Terminal {
     private:
@@ -79,7 +79,7 @@ class Terminal {
         bool isActual();
 
         // print
-        void print(std::vector<std::string> image, unsigned int x, unsigned int y, Point style, int z_index);
+        bool print(std::vector<std::string> image, int x, int y, Point style, int z_index);
 };
 
 // flush
