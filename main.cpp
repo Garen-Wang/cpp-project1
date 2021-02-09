@@ -19,7 +19,7 @@ int main() {
     down_terminal.print(images::x, 5, 40, special_point, 1);
     up_terminal.print(images::x, 5, 10, special_point, 2);
     down_terminal.print(images::x, 5, 40, default_point, 2);
-    terminal.flush();
+    flush();
     // system("clear");
     return 0;
 }
