@@ -130,7 +130,7 @@ void clearPart(int x, int y, int xx, int yy) {
     for(int i = x; i < xx; ++i) {
         for(int j = y; j < yy; ++j) {
             unsigned int idx = getIndex(i, j);
-            buffer = ' ', buffer_style[idx] = default_style, buffer_z[idx] = 0;
+            buffer[i] = ' ', buffer_style[idx] = default_style, buffer_z[idx] = 0;
         }
     }
 }
