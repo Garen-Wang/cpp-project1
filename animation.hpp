@@ -29,7 +29,8 @@ enum class Types {
 class Animation {
     public:
         virtual Types getType();
-        virtual void generate() = 0;
+        virtual unsigned int getFrames() = 0;
+        virtual void generate(unsigned int t) = 0;
         virtual void debug() = 0;
 };
 
@@ -43,12 +44,13 @@ class MoveAnimation : public Animation {
         int z;// z index
         int v;// moving velocity
         Direction direction;// move direction
-        Point style;// style
+        Style style;// style
         bool keep;// whether to keep last frame or not
     public:
-        MoveAnimation(Terminal *terminal, std::vector<std::string> &image, Direction direction, int x=0, int y=0, int z=0, int v=5, unsigned int start_frame=0, unsigned int duration=120, Point style=default_point, bool keep=false);
+        MoveAnimation(Terminal *terminal, std::vector<std::string> &image, Direction direction, int x=0, int y=0, int z=0, int v=1, unsigned int start_frame=0, unsigned int duration=120, Style style=default_style, bool keep=false);
         Types getType();
-        void generate();
+        unsigned int getFrames();
+        void generate(unsigned int t);
         void debug();
 };
 
@@ -60,12 +62,13 @@ class StillAnimation : public Animation {
         Terminal *terminal;// record terminal
         int x, y;// relative position to this terminal
         int z;// z index
-        Point style;// style
+        Style style;// style
         bool keep;// whether to keep last frame or not
     public:
-        StillAnimation(Terminal *terminal, std::vector<std::string> &image, int x=0, int y=0, int z=0, unsigned int start_frame=0, unsigned int duration=120, Point style=default_point, bool keep=false);
+        StillAnimation(Terminal *terminal, std::vector<std::string> &image, int x=0, int y=0, int z=0, unsigned int start_frame=0, unsigned int duration=120, Style style=default_style, bool keep=false);
         Types getType();
-        void generate();
+        unsigned int getFrames();
+        void generate(unsigned int t);
         void debug();
 };
 
@@ -76,7 +79,8 @@ class SequencialAnimation : public Animation {
     public:
         SequencialAnimation(std::vector<std::shared_ptr<Animation>> animations, unsigned int duration=120);
         Types getType();
-        void generate();
+        unsigned int getFrames();
+        void generate(unsigned int t);
         void debug();
 };
 
@@ -87,35 +91,7 @@ class ParallelAnimation : public Animation {
     public:
         ParallelAnimation(std::vector<std::shared_ptr<Animation>> animations, unsigned int duration=120);
         Types getType();
-        void generate();
-        void debug();
-};
-
-class Animations {
-    public:
-        virtual Types getType();
-        virtual void generate() = 0;
-        virtual void debug() = 0;
-};
-
-class SequencialAnimations : public Animations {
-    private:
-        std::vector<std::shared_ptr<Animations>> animations;
-        unsigned int duration;
-    public:
-        SequencialAnimations(std::vector<std::shared_ptr<Animations>> animations, unsigned int duration=120);
-        Types getType();
-        void generate();
-        void debug();
-};
-
-class ParallelAnimations : public Animations {
-    private:
-        std::vector<std::shared_ptr<Animations>> animations;
-        unsigned int duration;
-    public:
-        ParallelAnimations(std::vector<std::shared_ptr<Animations>> animations, unsigned int duration=120);
-        Types getType();
-        void generate();
+        unsigned int getFrames();
+        void generate(unsigned int t);
         void debug();
 };

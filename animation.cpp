@@ -32,22 +32,34 @@ Types SequencialAnimation::getType() {
 Types ParallelAnimation::getType() {
     return Types::Parallel;
 }
-Types Animations::getType() {
-    return Types::Base;
+
+unsigned int StillAnimation::getFrames() {
+    return start_frame + duration;
 }
-Types SequencialAnimations::getType() {
-    return Types::Sequencial;
+unsigned int MoveAnimation::getFrames() {
+    return start_frame + duration;
 }
-Types ParallelAnimations::getType() {
-    return Types::Parallel;
+unsigned int SequencialAnimation::getFrames() {
+    return duration;
+}
+unsigned int ParallelAnimation::getFrames() {
+    return duration;
 }
 
 // class MoveAnimation
-MoveAnimation::MoveAnimation(Terminal *terminal, std::vector<std::string> &image, Direction direction, int x, int y, int z, int v, unsigned int start_frame, unsigned int duration, Point style, bool keep):
+MoveAnimation::MoveAnimation(Terminal *terminal, std::vector<std::string> &image, Direction direction, int x, int y, int z, int v, unsigned int start_frame, unsigned int duration, Style style, bool keep):
 terminal(terminal), image(image), direction(direction), x(x), y(y), z(z), v(v), start_frame(start_frame), duration(duration), style(style), keep(keep) {}
 
-void MoveAnimation::generate() {
-
+void MoveAnimation::generate(unsigned int t) {
+    if(t >= start_frame && t < start_frame + duration) {
+        int xx = x + v * (t - start_frame) * dx[int(direction)];
+        int yy = y + v * (t - start_frame) * dy[int(direction)];
+        terminal->print(image, xx, yy, style, z);
+    } else if(keep && t >= start_frame + duration) {
+        int xx = x + v * (duration - 1) * dx[int(direction)];
+        int yy = y + v * (duration - 1) * dy[int(direction)];
+        terminal->print(image, xx, yy, style, z);
+    }
 }
 
 void MoveAnimation::debug() {
@@ -62,15 +74,16 @@ void MoveAnimation::debug() {
             y += v * dy[int(direction)];
         }
     }
-
 }
 
 // class StillAnimation
-StillAnimation::StillAnimation(Terminal *terminal, std::vector<std::string> &image, int x, int y, int z, unsigned int start_frame, unsigned int duration, Point style, bool keep):
+StillAnimation::StillAnimation(Terminal *terminal, std::vector<std::string> &image, int x, int y, int z, unsigned int start_frame, unsigned int duration, Style style, bool keep):
 terminal(terminal), image(image), x(x), y(y), z(z), start_frame(start_frame), duration(duration), style(style), keep(keep) {}
 
-void StillAnimation::generate() {
-    
+void StillAnimation::generate(unsigned int t) {
+    if(start_frame <= t && t < start_frame + duration || keep && t >= start_frame) {
+        terminal->print(image, x, y, style, z);
+    }
 }
 
 void StillAnimation::debug() {
@@ -89,12 +102,29 @@ void StillAnimation::debug() {
 SequencialAnimation::SequencialAnimation(std::vector<std::shared_ptr<Animation>> animations, unsigned int duration):
 animations(animations), duration(duration) {}
 
-void SequencialAnimation::generate() {
-
+void SequencialAnimation::generate(unsigned int t) {
+    unsigned int total_frame = 0;
+    for(auto it : animations) {
+        if(t < total_frame + it->getFrames()) {
+            it->generate(t);
+            return;
+        }
+        total_frame += it->getFrames();
+    }
 }
 
 void SequencialAnimation::debug() {
-    
+    unsigned int total_frame = 0;
+    for(auto it : animations) {
+        unsigned int last_frame = it->getFrames();
+        for(unsigned int t = 0; t < last_frame; ++t) {
+            usleep(per_frame);
+            clear();
+            it->generate(t);
+            flush();
+        }
+        total_frame += last_frame;
+    }
 }
 
 // class ParallelAnimation
@@ -102,35 +132,19 @@ void SequencialAnimation::debug() {
 ParallelAnimation::ParallelAnimation(std::vector<std::shared_ptr<Animation>> animations, unsigned int duration):
 animations(animations), duration(duration) {}
 
-void ParallelAnimation::generate() {
-
+void ParallelAnimation::generate(unsigned int t) {
+    for(auto it : animations) it->generate(t);
 }
 
 void ParallelAnimation::debug() {
-
-}
-
-// class SequencialAnimations
-SequencialAnimations::SequencialAnimations(std::vector<std::shared_ptr<Animations>> animations, unsigned int duration):
-animations(animations), duration(duration) {}
-
-void SequencialAnimations::generate() {
-    
-}
-
-void SequencialAnimations::debug() {
-
-}
-
-// class ParallelAnimation
-
-ParallelAnimations::ParallelAnimations(std::vector<std::shared_ptr<Animations>> animations, unsigned int duration):
-animations(animations), duration(duration) {}
-
-void ParallelAnimations::generate() {
-
-}
-
-void ParallelAnimations::debug() {
-
+    unsigned int last_frame = duration;
+    for(auto it : animations) {
+        last_frame = std::max(last_frame, it->getFrames());
+    }
+    for(unsigned int t = 0; t < last_frame; ++t) {
+        usleep(per_frame);
+        clear();
+        for(auto it : animations) it->generate(t);
+        flush();
+    }
 }

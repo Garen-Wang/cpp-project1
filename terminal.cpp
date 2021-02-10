@@ -31,7 +31,7 @@ std::pair<unsigned int, unsigned int> get_terminal_size() {
     return std::make_pair(height, width);
 }
 
-bool Point::operator == (const Point &rhs) const {
+bool Style::operator == (const Style &rhs) const {
     return text_attribute == rhs.text_attribute && foreground == rhs.foreground && background == rhs.background;
 }
 
@@ -46,6 +46,7 @@ offset_x(0), offset_y(0) {
     buffer.resize(size);
     buffer_style.resize(size);
     buffer_z.resize(size);
+    flush();
 }
 
 // constructor of subterminal
@@ -69,7 +70,7 @@ inline int getIndex(int x, int y) {
     return x * screen_width + y;
 }
 
-bool Terminal::print(std::vector<std::string> image, int x, int y, Point style, int z_index) {
+bool Terminal::print(std::vector<std::string> image, int x, int y, Style style, int z_index) {
     int image_height = image.size(), image_width = image[0].length();
     // x coordinate: [x + offset_x, x + offset_x + image_height)
     // y coordinate: [y + offset_y, y + offset_y + image_width)
@@ -115,8 +116,17 @@ void clear() {
     unsigned int size = screen_height * screen_width;
     buffer = "";
     buffer.resize(size);
-    std::vector<Point>().swap(buffer_style);
+    std::vector<Style>().swap(buffer_style);
     buffer_style.resize(size);
     std::vector<int>().swap(buffer_z);
     buffer_z.resize(size);
+}
+
+void clearPart(int x, int y, int xx, int yy) {
+    for(int i = x; i < xx; ++i) {
+        for(int j = y; j < yy; ++j) {
+            unsigned int idx = getIndex(i, j);
+            buffer = ' ', buffer_style[idx] = default_style, buffer_z[idx] = 0;
+        }
+    }
 }

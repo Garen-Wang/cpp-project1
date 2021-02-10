@@ -37,14 +37,14 @@ enum class Background {
     // 48 is undefined, so default
 };
 
-struct Point {
+struct Style {
     TextAttribute text_attribute;
     Foreground foreground;
     Background background;
-    bool operator == (const Point &rhs) const;
+    bool operator == (const Style &rhs) const;
 };
 // white on black, no text attribute
-Point default_point = {
+Style default_style = {
     TextAttribute::Default, Foreground::Default, Background::Default
 };
 
@@ -54,8 +54,8 @@ std::pair<unsigned int, unsigned int> get_terminal_size();
 // if null, convert to space
 std::string buffer;
 // buffer style
-// if null, convert to default_point
-std::vector<Point> buffer_style;
+// if null, convert to default_style
+std::vector<Style> buffer_style;
 std::vector<int> buffer_z;// 0 for space, must strictly greater to overlap
 unsigned int screen_height, screen_width;
 
@@ -80,10 +80,11 @@ class Terminal {
         bool isActual();
 
         // print
-        bool print(std::vector<std::string> image, int x, int y, Point style, int z_index);
+        bool print(std::vector<std::string> image, int x, int y, Style style, int z_index);
 };
 
 // flush
 void flush();
 // clean
 void clear();
+void clearPart(int x, int y, int xx, int yy);
