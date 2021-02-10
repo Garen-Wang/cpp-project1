@@ -71,10 +71,10 @@ class StillAnimation : public Animation {
 
 class SequencialAnimation : public Animation {
     private:
-        std::vector<Animation *> animations; // store instances of class Animation
+        std::vector<std::shared_ptr<Animation>> animations; // store instances of class Animation
         unsigned int duration;// unit: frame
     public:
-        SequencialAnimation(std::vector<Animation *> animations, unsigned int duration=120);
+        SequencialAnimation(std::vector<std::shared_ptr<Animation>> animations, unsigned int duration=120);
         Types getType();
         void generate();
         void debug();
@@ -82,10 +82,10 @@ class SequencialAnimation : public Animation {
 
 class ParallelAnimation : public Animation {
     private:
-        std::vector<Animation *> animations;
+        std::vector<std::shared_ptr<Animation>> animations;
         unsigned int duration;
     public:
-        ParallelAnimation(std::vector<Animation *> animations, unsigned int duration=120);
+        ParallelAnimation(std::vector<std::shared_ptr<Animation>> animations, unsigned int duration=120);
         Types getType();
         void generate();
         void debug();
@@ -100,10 +100,10 @@ class Animations {
 
 class SequencialAnimations : public Animations {
     private:
-        std::vector<Animations *> animations;
+        std::vector<std::shared_ptr<Animations>> animations;
         unsigned int duration;
     public:
-        SequencialAnimations(std::vector<Animations *> animations, unsigned int duration=120);
+        SequencialAnimations(std::vector<std::shared_ptr<Animations>> animations, unsigned int duration=120);
         Types getType();
         void generate();
         void debug();
@@ -111,10 +111,10 @@ class SequencialAnimations : public Animations {
 
 class ParallelAnimations : public Animations {
     private:
-        std::vector<Animations *> animations;
+        std::vector<std::shared_ptr<Animations>> animations;
         unsigned int duration;
     public:
-        ParallelAnimations(std::vector<Animations *> animations, unsigned int duration=120);
+        ParallelAnimations(std::vector<std::shared_ptr<Animations>> animations, unsigned int duration=120);
         Types getType();
         void generate();
         void debug();

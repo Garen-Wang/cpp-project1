@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
 #include "animation.hpp"
 #include "terminal.hpp"
@@ -69,7 +70,7 @@ StillAnimation::StillAnimation(Terminal *terminal, std::vector<std::string> &ima
 terminal(terminal), image(image), x(x), y(y), z(z), start_frame(start_frame), duration(duration), style(style), keep(keep) {}
 
 void StillAnimation::generate() {
-
+    
 }
 
 void StillAnimation::debug() {
@@ -78,14 +79,14 @@ void StillAnimation::debug() {
         usleep(per_frame);
         if(t >= start_frame) {
             predraw();
-            terminal->print(image, x, y, style, z);
-            flush();
+            bool res = terminal->print(image, x, y, style, z);
+            if(res) flush();
         }
     }
 }
 
 // class SequencialAnimation
-SequencialAnimation::SequencialAnimation(std::vector<Animation *> animations, unsigned int duration):
+SequencialAnimation::SequencialAnimation(std::vector<std::shared_ptr<Animation>> animations, unsigned int duration):
 animations(animations), duration(duration) {}
 
 void SequencialAnimation::generate() {
@@ -93,12 +94,12 @@ void SequencialAnimation::generate() {
 }
 
 void SequencialAnimation::debug() {
-
+    
 }
 
 // class ParallelAnimation
 
-ParallelAnimation::ParallelAnimation(std::vector<Animation *> animations, unsigned int duration):
+ParallelAnimation::ParallelAnimation(std::vector<std::shared_ptr<Animation>> animations, unsigned int duration):
 animations(animations), duration(duration) {}
 
 void ParallelAnimation::generate() {
@@ -110,7 +111,7 @@ void ParallelAnimation::debug() {
 }
 
 // class SequencialAnimations
-SequencialAnimations::SequencialAnimations(std::vector<Animations *> animations, unsigned int duration):
+SequencialAnimations::SequencialAnimations(std::vector<std::shared_ptr<Animations>> animations, unsigned int duration):
 animations(animations), duration(duration) {}
 
 void SequencialAnimations::generate() {
@@ -123,7 +124,7 @@ void SequencialAnimations::debug() {
 
 // class ParallelAnimation
 
-ParallelAnimations::ParallelAnimations(std::vector<Animations *> animations, unsigned int duration):
+ParallelAnimations::ParallelAnimations(std::vector<std::shared_ptr<Animations>> animations, unsigned int duration):
 animations(animations), duration(duration) {}
 
 void ParallelAnimations::generate() {
