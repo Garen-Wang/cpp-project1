@@ -13,26 +13,6 @@
 
 unsigned int per_frame = 40000;// about 24 frames per second
 
-void predraw() {
-    clear();
-}
-
-Types Animation::getType() {
-    return Types::Base;
-}
-Types StillAnimation::getType() {
-    return Types::Still;
-}
-Types MoveAnimation::getType() {
-    return Types::Move;
-}
-Types SequencialAnimation::getType() {
-    return Types::Sequencial;
-}
-Types ParallelAnimation::getType() {
-    return Types::Parallel;
-}
-
 unsigned int StillAnimation::getFrames() {
     return start_frame + duration;
 }
@@ -67,7 +47,7 @@ void MoveAnimation::debug() {
     for(int t = 0; t < last_frame; t++) {
         usleep(per_frame);
         if(t >= start_frame) {
-            predraw();
+            clear();
             bool res = terminal->print(image, x, y, style, z);
             if(res) flush();
             x += v * dx[int(direction)];
@@ -91,7 +71,7 @@ void StillAnimation::debug() {
     for(int t = 0; t < last_frame; t++) {
         usleep(per_frame);
         if(t >= start_frame) {
-            predraw();
+            clear();
             bool res = terminal->print(image, x, y, style, z);
             if(res) flush();
         }

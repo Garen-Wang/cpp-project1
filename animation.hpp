@@ -16,19 +16,8 @@ enum class Direction {
 const int dx[] = {0, -1, 1, 0, 0};
 const int dy[] = {0, 0, 0, -1, 1};
 
-void predraw();
-
-enum class Types {
-    Base = 0,
-    Still = 1,
-    Move = 2,
-    Sequencial = 3,
-    Parallel = 4
-};
-
 class Animation {
     public:
-        virtual Types getType();
         virtual unsigned int getFrames() = 0;
         virtual void generate(unsigned int t) = 0;
         virtual void debug() = 0;
@@ -48,7 +37,6 @@ class MoveAnimation : public Animation {
         bool keep;// whether to keep last frame or not
     public:
         MoveAnimation(Terminal *terminal, std::vector<std::string> &image, Direction direction, int x=0, int y=0, int z=0, int v=1, unsigned int start_frame=0, unsigned int duration=120, Style style=default_style, bool keep=false);
-        Types getType();
         unsigned int getFrames();
         void generate(unsigned int t);
         void debug();
@@ -66,7 +54,6 @@ class StillAnimation : public Animation {
         bool keep;// whether to keep last frame or not
     public:
         StillAnimation(Terminal *terminal, std::vector<std::string> &image, int x=0, int y=0, int z=0, unsigned int start_frame=0, unsigned int duration=120, Style style=default_style, bool keep=false);
-        Types getType();
         unsigned int getFrames();
         void generate(unsigned int t);
         void debug();
@@ -78,7 +65,6 @@ class SequencialAnimation : public Animation {
         unsigned int duration;// unit: frame
     public:
         SequencialAnimation(std::vector<std::shared_ptr<Animation>> animations, unsigned int duration=120);
-        Types getType();
         unsigned int getFrames();
         void generate(unsigned int t);
         void debug();
@@ -90,7 +76,6 @@ class ParallelAnimation : public Animation {
         unsigned int duration;
     public:
         ParallelAnimation(std::vector<std::shared_ptr<Animation>> animations, unsigned int duration=120);
-        Types getType();
         unsigned int getFrames();
         void generate(unsigned int t);
         void debug();
