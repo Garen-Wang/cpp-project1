@@ -123,6 +123,7 @@ void clear() {
 }
 
 void clearPart(int x, int y, int xx, int yy) {
+    assert(0 <= x && x < xx && xx < screen_height && 0 <= y && y < yy && yy < screen_width);
     for(int i = x; i < xx; ++i) {
         for(int j = y; j < yy; ++j) {
             unsigned int idx = getIndex(i, j);
