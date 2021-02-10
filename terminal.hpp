@@ -50,6 +50,7 @@ Style default_style = {
 
 std::pair<unsigned int, unsigned int> get_terminal_size();
 
+char sys_buf[10000];
 // buffer, displayed after a flush
 // if null, convert to space
 std::string buffer;

@@ -38,6 +38,7 @@ bool Style::operator == (const Style &rhs) const {
 // constructor of actual terminal
 Terminal::Terminal():
 offset_x(0), offset_y(0) {
+    setvbuf(stdout, sys_buf, _IOFBF, 10000);
     this->parent = nullptr;
     auto temp = get_terminal_size();
     screen_height = this->height = temp.first;
