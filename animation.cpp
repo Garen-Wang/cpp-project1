@@ -15,11 +15,41 @@ unsigned int per_frame = 40000;// about 24 frames per second
 void predraw() {
     clear();
 }
+
+Types Animation::getType() {
+    return Types::Base;
+}
+Types StillAnimation::getType() {
+    return Types::Still;
+}
+Types MoveAnimation::getType() {
+    return Types::Move;
+}
+Types SequencialAnimation::getType() {
+    return Types::Sequencial;
+}
+Types ParallelAnimation::getType() {
+    return Types::Parallel;
+}
+Types Animations::getType() {
+    return Types::Base;
+}
+Types SequencialAnimations::getType() {
+    return Types::Sequencial;
+}
+Types ParallelAnimations::getType() {
+    return Types::Parallel;
+}
+
 // class MoveAnimation
 MoveAnimation::MoveAnimation(Terminal *terminal, std::vector<std::string> &image, Direction direction, int x, int y, int z, int v, unsigned int start_frame, unsigned int duration, Point style, bool keep):
 terminal(terminal), image(image), direction(direction), x(x), y(y), z(z), v(v), start_frame(start_frame), duration(duration), style(style), keep(keep) {}
 
 void MoveAnimation::generate() {
+
+}
+
+void MoveAnimation::debug() {
     unsigned int last_frame = start_frame + duration;
     for(int t = 0; t < last_frame; t++) {
         usleep(per_frame);
@@ -31,6 +61,7 @@ void MoveAnimation::generate() {
             y += v * dy[int(direction)];
         }
     }
+
 }
 
 // class StillAnimation
@@ -38,6 +69,10 @@ StillAnimation::StillAnimation(Terminal *terminal, std::vector<std::string> &ima
 terminal(terminal), image(image), x(x), y(y), z(z), start_frame(start_frame), duration(duration), style(style), keep(keep) {}
 
 void StillAnimation::generate() {
+
+}
+
+void StillAnimation::debug() {
     unsigned int last_frame = start_frame + duration;
     for(int t = 0; t < last_frame; t++) {
         usleep(per_frame);
@@ -50,35 +85,51 @@ void StillAnimation::generate() {
 }
 
 // class SequencialAnimation
-SequencialAnimation::SequencialAnimation(std::vector<Animation *> animations, unsigned int duration=120):
+SequencialAnimation::SequencialAnimation(std::vector<Animation *> animations, unsigned int duration):
 animations(animations), duration(duration) {}
 
 void SequencialAnimation::generate() {
 
 }
 
+void SequencialAnimation::debug() {
+
+}
+
 // class ParallelAnimation
 
-ParallelAnimation::ParallelAnimation(std::vector<Animation *> animations, unsigned int duration=120):
+ParallelAnimation::ParallelAnimation(std::vector<Animation *> animations, unsigned int duration):
 animations(animations), duration(duration) {}
 
 void ParallelAnimation::generate() {
 
 }
 
+void ParallelAnimation::debug() {
+
+}
+
 // class SequencialAnimations
-SequencialAnimations::SequencialAnimations(std::vector<Animations *> animations, unsigned int duration=120):
+SequencialAnimations::SequencialAnimations(std::vector<Animations *> animations, unsigned int duration):
 animations(animations), duration(duration) {}
 
 void SequencialAnimations::generate() {
     
 }
 
+void SequencialAnimations::debug() {
+
+}
+
 // class ParallelAnimation
 
-ParallelAnimations::ParallelAnimations(std::vector<Animations *> animations, unsigned int duration=120):
+ParallelAnimations::ParallelAnimations(std::vector<Animations *> animations, unsigned int duration):
 animations(animations), duration(duration) {}
 
 void ParallelAnimations::generate() {
+
+}
+
+void ParallelAnimations::debug() {
 
 }

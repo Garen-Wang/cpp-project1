@@ -18,9 +18,19 @@ const int dy[] = {0, 0, 0, -1, 1};
 
 void predraw();
 
+enum class Types {
+    Base = 0,
+    Still = 1,
+    Move = 2,
+    Sequencial = 3,
+    Parallel = 4
+};
+
 class Animation {
     public:
+        virtual Types getType();
         virtual void generate() = 0;
+        virtual void debug() = 0;
 };
 
 class MoveAnimation : public Animation {
@@ -37,7 +47,9 @@ class MoveAnimation : public Animation {
         bool keep;// whether to keep last frame or not
     public:
         MoveAnimation(Terminal *terminal, std::vector<std::string> &image, Direction direction, int x=0, int y=0, int z=0, int v=5, unsigned int start_frame=0, unsigned int duration=120, Point style=default_point, bool keep=false);
+        Types getType();
         void generate();
+        void debug();
 };
 
 class StillAnimation : public Animation {
@@ -52,7 +64,9 @@ class StillAnimation : public Animation {
         bool keep;// whether to keep last frame or not
     public:
         StillAnimation(Terminal *terminal, std::vector<std::string> &image, int x=0, int y=0, int z=0, unsigned int start_frame=0, unsigned int duration=120, Point style=default_point, bool keep=false);
+        Types getType();
         void generate();
+        void debug();
 };
 
 class SequencialAnimation : public Animation {
@@ -61,7 +75,9 @@ class SequencialAnimation : public Animation {
         unsigned int duration;// unit: frame
     public:
         SequencialAnimation(std::vector<Animation *> animations, unsigned int duration=120);
+        Types getType();
         void generate();
+        void debug();
 };
 
 class ParallelAnimation : public Animation {
@@ -70,12 +86,16 @@ class ParallelAnimation : public Animation {
         unsigned int duration;
     public:
         ParallelAnimation(std::vector<Animation *> animations, unsigned int duration=120);
+        Types getType();
         void generate();
+        void debug();
 };
 
 class Animations {
     public:
+        virtual Types getType();
         virtual void generate() = 0;
+        virtual void debug() = 0;
 };
 
 class SequencialAnimations : public Animations {
@@ -84,7 +104,9 @@ class SequencialAnimations : public Animations {
         unsigned int duration;
     public:
         SequencialAnimations(std::vector<Animations *> animations, unsigned int duration=120);
+        Types getType();
         void generate();
+        void debug();
 };
 
 class ParallelAnimations : public Animations {
@@ -93,5 +115,7 @@ class ParallelAnimations : public Animations {
         unsigned int duration;
     public:
         ParallelAnimations(std::vector<Animations *> animations, unsigned int duration=120);
+        Types getType();
         void generate();
+        void debug();
 };
