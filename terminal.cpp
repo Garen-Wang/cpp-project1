@@ -100,7 +100,7 @@ bool Terminal::print(std::vector<std::string> image, int x, int y, Style style, 
 
 void flush() {
     unsigned int size = screen_height * screen_width;
-    for(int l = 0, r = 0; l < size; l = r) {
+    for(unsigned int l = 0, r = 0; l < size; l = r) {
         while(r < size && buffer_style[r] == buffer_style[l]) {
             if(!buffer[r]) buffer[r] = ' ';
             ++r;
@@ -116,10 +116,13 @@ void clear() {
     unsigned int size = screen_height * screen_width;
     buffer = "";
     buffer.resize(size);
-    std::vector<Style>().swap(buffer_style);
-    buffer_style.resize(size);
-    std::vector<int>().swap(buffer_z);
-    buffer_z.resize(size);
+    // std::vector<Style>().swap(buffer_style);
+    // buffer_style.resize(size);
+    // std::vector<int>().swap(buffer_z);
+    // buffer_z.resize(size);
+    for(register int i = 0; i < size; ++i) {
+        buffer_style[i] = default_style, buffer_z[i] = 0;
+    }
 }
 
 void clearPart(int x, int y, int xx, int yy) {

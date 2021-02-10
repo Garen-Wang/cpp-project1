@@ -64,7 +64,7 @@ class SequencialAnimation : public Animation {
         std::vector<std::shared_ptr<Animation>> animations; // store instances of class Animation
         unsigned int duration;// unit: frame
     public:
-        SequencialAnimation(std::vector<std::shared_ptr<Animation>> animations, unsigned int duration=120);
+        SequencialAnimation(std::vector<std::shared_ptr<Animation>> animations, unsigned int duration=30);
         unsigned int getFrames();
         void generate(unsigned int t);
         void debug();
@@ -75,7 +75,7 @@ class ParallelAnimation : public Animation {
         std::vector<std::shared_ptr<Animation>> animations;
         unsigned int duration;
     public:
-        ParallelAnimation(std::vector<std::shared_ptr<Animation>> animations, unsigned int duration=120);
+        ParallelAnimation(std::vector<std::shared_ptr<Animation>> animations, unsigned int duration=30);
         unsigned int getFrames();
         void generate(unsigned int t);
         void debug();

@@ -80,7 +80,11 @@ void StillAnimation::debug() {
 
 // class SequencialAnimation
 SequencialAnimation::SequencialAnimation(std::vector<std::shared_ptr<Animation>> animations, unsigned int duration):
-animations(animations), duration(duration) {}
+animations(animations), duration(duration) {
+    unsigned int total_frame = 0;
+    for(auto it : animations) total_frame += it->getFrames();
+    this->duration = std::max(this->duration, total_frame);
+}
 
 void SequencialAnimation::generate(unsigned int t) {
     unsigned int total_frame = 0;
@@ -94,7 +98,6 @@ void SequencialAnimation::generate(unsigned int t) {
 }
 
 void SequencialAnimation::debug() {
-    unsigned int total_frame = 0;
     for(auto it : animations) {
         unsigned int last_frame = it->getFrames();
         for(unsigned int t = 0; t < last_frame; ++t) {
@@ -103,25 +106,24 @@ void SequencialAnimation::debug() {
             it->generate(t);
             flush();
         }
-        total_frame += last_frame;
     }
 }
 
 // class ParallelAnimation
 
 ParallelAnimation::ParallelAnimation(std::vector<std::shared_ptr<Animation>> animations, unsigned int duration):
-animations(animations), duration(duration) {}
+animations(animations), duration(duration) {
+    for(auto it : animations) {
+        this->duration = std::max(this->duration, it->getFrames());
+    }
+}
 
 void ParallelAnimation::generate(unsigned int t) {
     for(auto it : animations) it->generate(t);
 }
 
 void ParallelAnimation::debug() {
-    unsigned int last_frame = duration;
-    for(auto it : animations) {
-        last_frame = std::max(last_frame, it->getFrames());
-    }
-    for(unsigned int t = 0; t < last_frame; ++t) {
+    for(unsigned int t = 0; t < duration; ++t) {
         usleep(per_frame);
         clear();
         for(auto it : animations) it->generate(t);
